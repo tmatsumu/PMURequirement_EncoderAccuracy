@@ -1,0 +1,73 @@
+\documentclass[11pt]{amsart}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\newcommand\ben{\begin{eqnarray}}
+\newcommand\een{\end{eqnarray}}
+
+\title{Requirement to the encoder measurement for LiteBIRD PMU}
+\author{Written by T. Matsumura (ISAS/JAXA) \\ Checked by Y. Sakurai (IPMU)}
+\date{\today}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+%\section{}
+%\subsection{}
+
+\section{Introduction}
+
+\section{the back-of-the envelop calculation}
+
+We start with the requirement of the absolute angle accuracy as 
+\begin{itemize}
+\item bias: $\Delta\alpha < 1$~arcmin. 
+\item random: $\Delta\alpha < 10$~degs per sample (10 Hz sampling)
+\end{itemize}
+
+The simplest HWP time stream can be written as 
+\ben
+	I_{out} \propto I + Q\cos{4\rho(t)} + U\sin{4\rho(t)}
+\een
+where $\rho$ is the phase angle as a function of time. In order to recover the polarization angle, we demodulate as
+\ben
+	I_{out} \cos{4\rho} &=& I \cos{4\rho}+ Q\cos^2{4\rho} + U\sin{4\rho}\cos{4\rho} \\
+	&=&  I \cos{4\rho}+ \frac{1}{2}Q (\cos{2\rho}+1) + \frac{1}{2}U\sin{8\rho} \\
+	&=&  \frac{1}{2}Q + I \cos{4\rho} + \frac{1}{2}Q \cos{8\rho} +  \frac{1}{2}U\sin{8\rho} \\
+	\tilde{Q} &\rightarrow& 2 I_{out} \cos{4\rho}  \ \ \ \mbox{after low pass filtering}
+\een
+Similarly for $U$ as 
+\ben
+	I_{out} \sin{4\rho} &=& I \sin{4\rho}+ Q\sin{4\rho}\cos{4\rho} + U\sin^2{4\rho} \\
+	\tilde{U} &\rightarrow& 2 I_{out} \sin{4\rho}  \ \ \ \mbox{after low pass filtering}
+\een
+
+When there is an uncertainty in the HWP angle reconstruction, 
+\ben
+	I_{out} \cos{(4\rho+\Delta\rho)} &=& I \cos{(4\rho+\Delta\rho)}+ Q\cos{4\rho}\cos{(4\rho+\Delta\rho)} + U\sin{4\rho}\cos{(4\rho+\Delta\rho)} \\
+	&=& \frac{1}{2}(Q\cos{\Delta\rho}-U\sin{\Delta\rho})+I\cos{(4\rho+\Delta\rho)} + (\frac{Q}{2}\cos{(8\rho+\Delta\rho)} + \frac{U}{2}\sin{(8\rho+\Delta\rho)}) \\ 
+	\tilde{Q} = 2 I_{out} \cos{(4\rho+\Delta\rho)} &\rightarrow& Q\cos{\Delta\rho}-U\sin{\Delta\rho}
+\een
+Similarly for $U$ as
+\ben
+	\tilde{U} = 2 I_{out} \sin{(4\rho+\Delta\rho)} &\rightarrow& Q\sin{\Delta\rho}+U\cos{\Delta\rho}
+\een
+
+In order to convert $Q$ and $U$ in terms of the polarization angle $\alpha$, $Q=I_p \cos{2\alpha}$ and $U=I_p \sin{2\alpha}$.
+Thus, the polarization angle uncertainty $\Delta\alpha$ and the HWP angle uncertainty $\Delta\rho$ relate as
+\ben
+	4\Delta\rho = 2\Delta\alpha.
+\een
+
+Thus, the requirement of the HWP angle uncertainty is 
+\ben
+	\Delta\rho = \frac{1}{2} \Delta\alpha < 0.5 \  \mbox{arcmin} \\
+\een
+Thus we choose the measurement accuracy as $0.05$~arcmin$ \sim 0.001$~degs.
+
+\end{document}  
